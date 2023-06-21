@@ -1,8 +1,8 @@
 <td class="py-2 pr-2">
   <div class="flex items-center">
-    <img [src]="faculty.userPhoto" class="mr-2 h-10 w-10 flex-none rounded-sm" alt="" />
+    <img (click)="toggleImgDialog()" [src]="faculty.userPhoto" class="cursor-pointer mr-2 h-10 w-10 flex-none rounded-sm" alt="" />
     <div class="flex flex-col justify-items-start">
-      <a href="#" class="mb-1 text-sm font-semibold text-gray-900 dark:text-night-100 dark:hover:text-primary-500">{{
+      <a  class="mb-1 text-sm font-semibold text-gray-900 dark:text-night-100 dark:hover:text-primary-500">{{
         faculty.displayName
       }}</a>
       <span class="text-xs font-semibold text-gray-400 dark:text-night-300">{{ faculty.rfid }}</span>
@@ -17,15 +17,215 @@
 </td>
 <td class="py-2 pl-2 text-right">
   <div class="flex justify-end">
-    <button
-      
+    <button 
+      (click)="editItemProduct(faculty.rfid, faculty.displayName,faculty.subject, faculty.email)"
       class="flex h-7 w-7 items-center justify-center rounded-md bg-blue-200 text-blue-400 dark:bg-night-500 dark:text-night-300">
       <svg-icon src="assets/icons/outline/pencil.svg" [svgClass]="'h-5 w-5'"> </svg-icon>
     </button>
     <button
-      
+      (click)="deleteItem(faculty.id)"
       class="flex ml-1 h-7 w-7 items-center justify-center rounded-md bg-red-200 text-red-400 dark:bg-night-500 dark:text-night-300">
       <svg-icon src="assets/icons/outline/trash.svg" [svgClass]="'h-5 w-5'"> </svg-icon>
     </button>
   </div>
 </td>
+
+
+<!-- Edit Product Dialog -->
+<div *ngIf="isEditFacultyDialogOpen">
+  <div
+    class="z-20 fixed top-0 left-0 right-0 bottom-0 opacity-50 bg-neutral-900 dark:opacity-80"
+  ></div>
+  <form [formGroup]="form" (ngSubmit)="onEditFaculty()">
+    <div
+      class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg flex flex-col gap-2 justify-center items-center z-40 fixed w-11/12 sm:w-1/2 lg:w-1/3 xl:w-1/3 top-0 left-0 right-0 bottom-0 m-auto h-min p-4"
+    >
+      <h2 class="mb-4 font-bold text-xl text-gray-600 dark:text-white">
+        Edit Faculty
+      </h2>
+
+        <div class="form__group mb-2 w-full z-0"> 
+
+          <div class="relative">
+            <input
+              type="text"
+              id="rfid"
+              class="peer block"
+              [ngClass]="{ 'is__invalid-input': submitted && f['rfid'].errors }"
+              placeholder=" "
+              formControlName="rfid" />
+            <label
+              for="rfid"
+              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
+              RFID
+            </label>
+          </div>
+          <div *ngIf="submitted && f['rfid'].errors" class="is__invalid-error">
+            <div *ngIf="f['rfid'].errors['required']">Required field</div>
+          </div>
+        </div>  
+        
+        <div class="form__group mb-2 w-full z-0">       
+          <div class="relative">
+            <input
+              type="text"
+              id="displayName"
+              class="peer block"
+              [ngClass]="{ 'is__invalid-input': submitted && f['displayName'].errors }"
+              placeholder=" "
+              formControlName="displayName" />
+            <label
+              for="displayName"
+              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
+              Name
+            </label>
+          </div>
+          <div *ngIf="submitted && f['displayName'].errors" class="is__invalid-error">
+            <div *ngIf="f['displayName'].errors['required']">Required field</div>
+          </div>
+        </div>  
+
+        <div class="form__group mb-4 w-full z-0">       
+          <div class="relative">
+            <input
+              type="text"
+              id="subject"
+              class="peer block"
+              [ngClass]="{ 'is__invalid-input': submitted && f['subject'].errors }"
+              placeholder=" "
+              formControlName="subject" />
+            <label
+              for="subject"
+              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
+              Subject
+            </label>
+          </div>
+          <div *ngIf="submitted && f['subject'].errors" class="is__invalid-error">
+            <div *ngIf="f['subject'].errors['required']">Required field</div>
+          </div>
+        </div>  
+
+        <div class="form__group mb-4 w-full z-0">       
+          <div class="relative">
+            <input
+              type="text"
+              id="email"
+              class="peer block"
+              [ngClass]="{ 'is__invalid-input': submitted && f['email'].errors }"
+              placeholder=" "
+              formControlName="email" />
+            <label
+              for="email"
+              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
+              Email
+            </label>
+          </div>
+          <div *ngIf="submitted && f['email'].errors" class="is__invalid-error">
+            <div *ngIf="f['email'].errors['required']">Required field</div>
+          </div>
+        </div>  
+
+      <div class="flex w-full gap-3">
+        <button
+          class="flex-1 max-w-xs rounded-full relative overflow-hidden inline-flex group items-center justify-center bg-primary-500 text-white px-10 py-2"
+        >
+          <span
+            class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-80 group-hover:h-80 lg:group-hover:w-56 lg:group-hover:h-56 xl:group-hover:w-80 xl:group-hover:h-80 opacity-10"
+          ></span>
+          <span class="relative">Update</span>
+        </button>
+        <button
+          (click)="toggleFacultyDialog()"
+          class="flex-1 max-w-xs rounded-full relative overflow-hidden inline-flex group items-center justify-center bg-[#888888] text-white px-10 py-2"
+        >
+          <span
+            class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-80 group-hover:h-80 lg:group-hover:w-56 lg:group-hover:h-56 xl:group-hover:w-80 xl:group-hover:h-80 opacity-10"
+          ></span>
+          <span 
+            class="relative">Cancel</span>
+        </button>
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<div *ngIf="isImgDialogOpen">
+  <div
+    class="z-20 fixed top-0 left-0 right-0 bottom-0 opacity-50 bg-neutral-900 dark:opacity-80"
+  ></div>
+  <div
+      class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg flex flex-col gap-2 justify-center items-center z-40 fixed w-11/12 sm:w-1/2 lg:w-1/3 xl:w-1/3 top-0 left-0 right-0 bottom-0 m-auto h-min p-4"
+    >
+    <div class="mb-4 flex-[4] flex flex-col gap-2 min-w-[400px]">
+                <h3 class="font-normal dark:text-white text-xl">Upload queue</h3>
+  
+                <table class="table">
+                  <thead class="border-b border-gray-300">
+                    <tr>
+                      <th class="dark:text-white w-[70%] text-left">File Name</th>
+                      <th class="dark:text-white text-left">Size</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of uploader.queue">
+                      <td>
+                        <strong>{{ item?.file?.name }}</strong>
+                      </td>
+                      <td *ngIf="uploader.options.isHTML5" nowrap class="text-left">
+                        {{ item?.file?.size / 1024 / 1024 | number: ".2" }} MB
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+  
+                <div class="dark:text-white">
+                  Queue progress:
+                  <div class="w-full bg-gray-100 rounded-md h-4 progress">
+                    <div
+                      class="bg-[#18ce0f] rounded-md h-full"
+                      role="progressbar"
+                      [ngStyle]="{ width: uploader.progress + '%' }"
+                    ></div>
+                  </div>
+                </div>
+  
+                <div class="w-full mt-4 flex justify-end gap-4">
+  
+                  <button
+                    (click)="uploadImage()"
+                    [disabled]="!uploader.queue.length"
+                    class="disabled:opacity-50 justify-center rounded-md border border-transparent bg-primary-500 py-2 px-4 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 hover:bg-primary-400">
+                    Add File
+                  </button>
+  
+                  <div class="file-input">
+                    <input
+                      type="file"
+                      ng2FileSelect
+                      [uploader]="uploader"
+                      class="file opacity-0 w-[0.1px] h-[0.1px] absolute"
+                      id="file"
+                    />
+                    <label
+                      for="file"
+                      class="min-w-[7rem] p-2 bg-[#888888] text-white rounded relative cursor-pointer flex justify-center items-center transition-transform duration-200 ease-out hover:opacity-90"
+                    >
+                      Select File
+                    </label>
+                  </div>
+
+                  <button
+                    (click)="toggleImgDialog()"
+                    class="min-w-[7rem] p-2 bg-[#888888] text-white rounded relative cursor-pointer flex justify-center items-center transition-transform duration-200 ease-out hover:opacity-90"
+                  >
+                    <span
+                      class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-80 group-hover:h-80 lg:group-hover:w-56 lg:group-hover:h-56 xl:group-hover:w-80 xl:group-hover:h-80 opacity-10"
+                    ></span>
+                    <span 
+                      class="relative">Cancel</span>
+                  </button>
+                </div>
+    </div>
+  </div>
+</div>

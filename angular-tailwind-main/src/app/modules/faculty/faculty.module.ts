@@ -8,6 +8,7 @@ import { FacultyTableItemComponent } from './faculty-table-item/faculty-table-it
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { FileUploadModule } from 'ng2-file-upload';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
+    FileUploadModule
   ],
 })
 export class FacultyModule {}

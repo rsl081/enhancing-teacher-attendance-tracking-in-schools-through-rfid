@@ -34,6 +34,14 @@ export class AccountService {
     return this.http.get<UserRoot>(this.baseURL + 'account/faculty/all').pipe(map((f) => f.data));
   }
 
+  deleteFaculty(id: any) {
+    return this.http.delete<any>(this.baseURL + 'account/faculty/delete/' + id);
+  }
+
+  editFaculty(faculty: {}) {
+    return this.http.put(this.baseURL + 'account/faculty/update', faculty);
+  }
+
   setCurrentUser(user: User) {
     if (user !== null) {
       user.role = this.getDecodedToken(user.token).role;
@@ -45,5 +53,4 @@ export class AccountService {
   getDecodedToken(token: string) {
     return JSON.parse(atob(token.split('.')[1]));
   }
-  
 }

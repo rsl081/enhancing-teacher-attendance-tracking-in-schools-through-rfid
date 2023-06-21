@@ -10,6 +10,7 @@ namespace API.Helper
         {
             CreateMap<AppUser, UserDto>()
                 .ForMember(p => p.UserPhoto, o => o.MapFrom(s => s.UserPhoto.Url));
+            CreateMap<UpdateUser, AppUser>();
             CreateMap<UserPhoto, ContentPhotoCreateDto>();
         }
     }
