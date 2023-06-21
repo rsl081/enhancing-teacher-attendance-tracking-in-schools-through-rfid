@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AccountService } from 'src/app/core/services/account.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -12,7 +13,11 @@ export class SignInComponent implements OnInit {
   submitted = false;
   passwordTextType!: boolean;
 
-  constructor(private readonly _formBuilder: FormBuilder, private readonly _router: Router) {}
+  constructor(
+    private readonly _formBuilder: FormBuilder,
+    private readonly _router: Router,
+    private _accountService: AccountService,
+  ) {}
 
   ngOnInit(): void {
     this.form = this._formBuilder.group({
@@ -33,11 +38,21 @@ export class SignInComponent implements OnInit {
     this.submitted = true;
     const { email, password } = this.form.value;
 
+    let credentials = {
+      email: email,
+      password: password,
+    };
+
     // stop here if form is invalid
     if (this.form.invalid) {
       return;
     }
 
-    this._router.navigate(['/']);
+    this._accountService.login(credentials).subscribe({
+      error: () => alert('Unauthorized'),
+      complete: () => {
+        this._router.navigate(['/']);
+      },
+    });
   }
 }
