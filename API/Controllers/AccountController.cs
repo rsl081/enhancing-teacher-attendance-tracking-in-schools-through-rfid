@@ -65,7 +65,7 @@ namespace API.Controllers
 
         }
 
-         [HttpPost("faculty/register")]
+        [HttpPost("faculty/register")]
         public async Task<ActionResult<UserDto>> RegisterFaculty(
             RegisterUserDto registerFacultyDto)
         {
@@ -178,8 +178,8 @@ namespace API.Controllers
         }
 
         [HttpPut("faculty/update")]
-        public async Task<ActionResult<UserDto>> UpdateFaculty(
-            UserDto facultyUpdateDto)
+        public async Task<ActionResult> UpdateFaculty(
+            UpdateUser facultyUpdateDto)
         {
             var faculty = await _userManager.Users.SingleOrDefaultAsync(
                 x => x.Email == facultyUpdateDto.Email);
