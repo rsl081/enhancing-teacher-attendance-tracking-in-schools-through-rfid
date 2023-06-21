@@ -1,4 +1,5 @@
 using Core.Interfaces;
+using Infrastructure.Data;
 using Infrastructure.Services;
 
 namespace API.Extensions
@@ -10,8 +11,8 @@ namespace API.Extensions
             IConfiguration config)
         {
             
-            // services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
-            // services.AddScoped<ITokenService, TokenService>();
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             
             return services;
