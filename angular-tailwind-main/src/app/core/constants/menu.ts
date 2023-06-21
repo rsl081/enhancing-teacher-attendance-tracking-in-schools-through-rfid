@@ -26,50 +26,20 @@ export class Menu {
         },
       ],
     },
+
     {
-      group: 'Collaboration',
-      separator: true,
-      items: [
-        {
-          icon: 'assets/icons/outline/download.svg',
-          label: 'Download',
-          route: '/download',
-        },
-        {
-          icon: 'assets/icons/outline/gift.svg',
-          label: 'Gift Card',
-          route: '/gift',
-        },
-        {
-          icon: 'assets/icons/outline/users.svg',
-          label: 'Users',
-          route: '/users',
-        },
-      ],
-    },
-    {
-      group: 'Config',
+      group: 'Menu',
       separator: false,
       items: [
         {
-          icon: 'assets/icons/outline/cog.svg',
-          label: 'Settings',
+          icon: 'assets/icons/outline/user-group.svg',
+          label: 'Attendance',
           route: '/settings',
         },
         {
-          icon: 'assets/icons/outline/bell.svg',
-          label: 'Notifications',
-          route: '/gift',
-        },
-        {
-          icon: 'assets/icons/outline/folder.svg',
-          label: 'Folders',
-          route: '/folders',
-          children: [
-            { label: 'Current Files', route: '/folders/current-files' },
-            { label: 'Downloads', route: '/folders/download' },
-            { label: 'Trash', route: '/folders/trash' },
-          ],
+          icon: 'assets/icons/outline/users.svg',
+          label: 'Faculty',
+          route: '/faculty',
         },
       ],
     },
