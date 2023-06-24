@@ -9,10 +9,12 @@ namespace API.Controllers
     public class BaseApiController : ControllerBase
     {
         protected readonly DataContext _dataContext;
+        protected readonly IMapper _mapper;
 
-        public BaseApiController(DataContext dataContext)
+        public BaseApiController(DataContext dataContext, IMapper mapper)
         {
             this._dataContext = dataContext;
+            this._mapper = mapper;
         }
     }
 }

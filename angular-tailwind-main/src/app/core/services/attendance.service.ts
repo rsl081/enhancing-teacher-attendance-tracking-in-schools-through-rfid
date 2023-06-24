@@ -8,11 +8,25 @@ import { environment } from 'src/environments/environment';
 })
 export class AttendanceService {
   private baseURL = environment.apiUrl;
-  contentUpdateNeeded = new Subject<{}>();
+  attendanceUpdateNeeded = new Subject<void>();
 
   constructor(private http: HttpClient) {}
 
-  postContent(body: {}) {
-    return this.http.post<any>(this.baseURL + 'contents', body).pipe((s) => s);
+  createAttendance(body: {}) {
+    return this.http.post<any>(this.baseURL + 'attendance', body).pipe((s) => s);
   }
+
+  getAttendance() {
+    return this.http.get<any>(this.baseURL + 'attendance').pipe((s) => s);
+  }
+
+  searchAttendance(search: any) {
+    return this.http.get<any>(this.baseURL + 'attendance/?search=' + search);
+  }
+
+  deleteAttendance(id: string) {
+    return this.http.delete<any>(this.baseURL + 'attendance/the-attendance/' + id).pipe((s) => s);
+  }
+
+
 }

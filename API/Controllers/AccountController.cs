@@ -14,7 +14,6 @@ namespace API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        protected readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
         private readonly ITokenService _tokenService;
         public AccountController(
@@ -24,12 +23,11 @@ namespace API.Controllers
             IMapper mapper,
             IPhotoService photoService,
             DataContext dataContext) 
-            : base(dataContext)
+            : base(dataContext, mapper)
         {
             this._signInManager = signInManager;
             this._userManager = userManager;
             this._tokenService = tokenService;
-            this._mapper = mapper;
             this._photoService = photoService;
         }
 
