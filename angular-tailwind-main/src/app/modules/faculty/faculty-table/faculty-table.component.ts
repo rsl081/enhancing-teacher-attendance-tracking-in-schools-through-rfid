@@ -13,6 +13,7 @@ export class FacultyTableComponent implements OnInit {
   isAddFacultyDialogOpen = false;
   public activeFaculty: User[] = [];
   form: FormGroup;
+  test = '';
 
   constructor(private _formBuilder: FormBuilder, private _accountService: AccountService) {}
 
@@ -34,6 +35,7 @@ export class FacultyTableComponent implements OnInit {
     this._accountService.getAllFaculty().subscribe({
       next: (faculty) => {
         this.activeFaculty = faculty;   
+        this.test = 'eqweqwewqewq'
       },
       error: (error) => alert(error.message),
     });

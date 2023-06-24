@@ -34,7 +34,7 @@ export class Menu {
         {
           icon: 'assets/icons/outline/user-group.svg',
           label: 'Attendance',
-          route: '/settings',
+          route: '/attendance',
         },
         {
           icon: 'assets/icons/outline/users.svg',

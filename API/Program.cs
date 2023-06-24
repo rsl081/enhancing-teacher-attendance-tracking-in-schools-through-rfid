@@ -50,7 +50,7 @@ var services = scope.ServiceProvider;
 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
 try {
-
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     //Seed User
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();

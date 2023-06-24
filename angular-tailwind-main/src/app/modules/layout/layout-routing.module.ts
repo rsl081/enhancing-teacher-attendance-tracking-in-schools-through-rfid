@@ -14,6 +14,11 @@ const routes: Routes = [
     component: LayoutComponent,
     loadChildren: () => import('../faculty/faculty.module').then((m) => m.FacultyModule),
   },
+  {
+    path: 'attendance',
+    component: LayoutComponent,
+    loadChildren: () => import('../attendance/attendance.module').then((m) => m.AttendanceModule),
+  },
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: 'error/404' },
 ];
