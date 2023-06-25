@@ -4,11 +4,8 @@
   <div class="px-4">
     <!-- Logo -->
     <div class="relative h-10">
-      <div class="flex items-center" *ngIf="showSideBar$ | async">
-        <a class="flex items-center justify-center rounded bg-primary-500 p-2 focus:outline-none focus:ring-1">
-          <svg-icon src="assets/icons/logo.svg"> </svg-icon>
-        </a>
-        <b class="ml-1 pl-2 text-sm font-bold dark:text-night-50">
+      <div class="flex items-center justify-center" *ngIf="showSideBar$ | async">
+        <b class="text-sm font-bold">
           {{ appJson.displayName }}
         </b>
       </div>

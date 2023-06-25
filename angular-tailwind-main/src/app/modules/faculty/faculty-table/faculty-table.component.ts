@@ -32,10 +32,9 @@ export class FacultyTableComponent implements OnInit {
   }
 
   fetchFaculty(): void {
-    this._accountService.getAllFaculty().subscribe({
+    this._accountService.getAllFaculty('').subscribe({
       next: (faculty) => {
-        this.activeFaculty = faculty;   
-        this.test = 'eqweqwewqewq'
+        this.activeFaculty = faculty; 
       },
       error: (error) => alert(error.message),
     });

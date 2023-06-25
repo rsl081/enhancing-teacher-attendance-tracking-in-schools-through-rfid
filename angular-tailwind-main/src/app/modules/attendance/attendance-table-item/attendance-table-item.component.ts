@@ -32,17 +32,20 @@ export class AttendanceTableItemComponent implements OnInit {
     });
     this.initializeUploader();
 
-      // const timeString = '14:55:38.138';
+      const timeString = '14:55:38.138';
       this.attendance.timeIn = this.attendance.timeIn.split('T')[1];
-      const timeIn = new Date('1970-01-01T' + this.attendance.timeIn + 'Z'); // Create a Date object
+      const timeIn = new Date('1970-01-01T' + this.attendance.timeIn + '+07:30'); // Create a Date object
 
       this.attendance.timeIn = this.datePipe.transform(timeIn, 'hh:mm a'); // Format the Date object
       
-      this.attendance.timeOut = this.attendance.timeOut.split('T')[1];
-      const timeOut = new Date('1970-01-01T' + this.attendance.timeOut + 'Z'); // Create a Date object
 
-      this.attendance.timeOut = this.datePipe.transform(timeOut, 'hh:mm a'); // Format the Date object
-
+      if (this.attendance.timeOut != null) {
+        this.attendance.timeOut = this.attendance.timeOut.split('T')[1];
+        const timeOut = new Date('1970-01-01T' + this.attendance.timeOut + '+07:30'); // Create a Date object
+  
+        this.attendance.timeOut = this.datePipe.transform(timeOut, 'hh:mm a'); // Format the Date object
+      }
+      
   }
 
   

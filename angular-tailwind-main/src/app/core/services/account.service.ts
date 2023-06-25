@@ -30,8 +30,8 @@ export class AccountService {
     return this.http.post<User>(this.baseURL + 'account/faculty/register', values);
   }
 
-  getAllFaculty() {
-    return this.http.get<UserRoot>(this.baseURL + 'account/faculty/all').pipe(map((f) => f.data));
+  getAllFaculty(rfid?: any) {
+    return this.http.get<UserRoot>(this.baseURL + 'account/faculty/all?search=' + rfid).pipe(map((f) => f.data));
   }
 
   deleteFaculty(id: any) {

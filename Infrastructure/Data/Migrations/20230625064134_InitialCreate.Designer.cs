@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230621061448_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20230625064134_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,14 +26,18 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Core.Entities.Attendance", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AttendanceDateId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("NumberOfHour")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Rfid")
+                        .HasColumnType("text");
 
                     b.Property<string>("Subject")
                         .HasColumnType("text");
@@ -44,7 +48,7 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTime>("TimeIn")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("TimeOut")
+                    b.Property<DateTime?>("TimeOut")
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
@@ -205,7 +209,7 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.ToTable("UserPhoto");
+                    b.ToTable("UserPhotos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -302,7 +306,7 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Core.Entities.Attendance", b =>
                 {
                     b.HasOne("Core.Entities.AttendanceDate", "AttendanceDate")
-                        .WithMany()
+                        .WithMany("Attendances")
                         .HasForeignKey("AttendanceDateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -372,6 +376,11 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Core.Entities.AttendanceDate", b =>
+                {
+                    b.Navigation("Attendances");
                 });
 
             modelBuilder.Entity("Core.Entities.Identity.AppRole", b =>

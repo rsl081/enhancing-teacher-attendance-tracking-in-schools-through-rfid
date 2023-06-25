@@ -21,7 +21,7 @@ namespace API.Controllers
             _dataContext.AttendanceDates.Add(attendanceCreateDto);
             await _dataContext.SaveChangesAsync();
 
-            return Ok("Successfully Created");
+            return Ok();
         }
 
         [HttpGet]
@@ -61,37 +61,59 @@ namespace API.Controllers
         }
 
         [HttpGet("the-attendance")]
-        public async Task<ActionResult> GetAttendances()
+        public async Task<ActionResult> GetAttendances(string search, string searchAttendanceDateId)
         {
             var attendance = 
                     await _dataContext.Attendances
                                     .ToListAsync();
-            return Ok(attendance);
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                attendance = attendance.Where(p => 
+                                    p.Rfid == search && 
+                                    p.AttendanceDateId.ToString() == searchAttendanceDateId)
+                                    .ToList();
+                return Ok(attendance);
+            }
+
+            return Ok();
         }
 
         [HttpPost("the-attendance")]
         public async Task<ActionResult> CreateAttendance(
-            Attendance attendanceCreateDto)
+            CreateAttendanceDto attendanceCreate)
         {
+            
+            var attendanceCreateDto = _mapper.Map<CreateAttendanceDto, Attendance>(attendanceCreate);
+
+             // Set nullable DateTime property to null if it has a default value
+            if (attendanceCreate.TimeOut == default)
+            {
+                attendanceCreateDto.TimeOut = null;
+            }
+            
             _dataContext.Attendances.Add(attendanceCreateDto);
             await _dataContext.SaveChangesAsync();
 
-            return Ok("Successfully Created");
+            return Ok();
         }
 
         [HttpPut("the-attendance")]
         public async Task<ActionResult> UpdateAttendance(
-            Attendance attendanceCreateDto)
+            CreateAttendanceDto attendanceCreate)
         {
+            var attendanceCreateDto = _mapper.Map<CreateAttendanceDto, Attendance>(attendanceCreate);
+
+
             _dataContext.Attendances.Update(attendanceCreateDto);
             await _dataContext.SaveChangesAsync();
 
-            return Ok("Successfully Created");
+            return Ok();
         }
 
         [HttpDelete("the-attendance/{id}")]
         public async Task<ActionResult> DeleteAttendance(
-            string id)
+            Guid id)
         {
             var ad = await _dataContext.Attendances.FindAsync(id);
 
@@ -99,6 +121,14 @@ namespace API.Controllers
             await _dataContext.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpGet("datetime")]
+        public ActionResult GatDateTime()
+        {   
+            var date = DateTime.Now;
+
+            return Ok(date);
         }
 
 

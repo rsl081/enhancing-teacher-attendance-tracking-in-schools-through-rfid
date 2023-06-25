@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AccountService } from 'src/app/core/services/account.service';
 import { AttendanceService } from 'src/app/core/services/attendance.service';
 
 @Component({
@@ -8,15 +9,21 @@ import { AttendanceService } from 'src/app/core/services/attendance.service';
   styleUrls: ['./attendance-table.component.scss'],
 })
 export class AttendanceTableComponent implements OnInit {
+  submitted = false;
   isAddFacultyDialogOpen = false;
   isDropDownOpen = false;
   activeAttendance: any[];
   date: any;
   currentDate: any;
   form: FormGroup;
-  test:any;
+  id: string;
+  timeOut: string;
 
-  constructor(private _formBuilder: FormBuilder, private _attendanceService: AttendanceService) {}
+  constructor(
+    private _accountService: AccountService,
+    private _formBuilder: FormBuilder,
+    private _attendanceService: AttendanceService,
+  ) {}
 
   ngOnInit(): void {
     this.form = this._formBuilder.group({
@@ -26,32 +33,13 @@ export class AttendanceTableComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
     });
 
-    // this.fetchAttendance()
-    //   .then((date) => {
-    //     this.date = date;
-    //   })
-    //   .catch((error) => {
-    //     alert(error.message);
-    //   });
-
-    //  this.fetchSearchAttendance()
-    //    .then((activeAttendance: any) => {
-    //      console.log(activeAttendance);
-    //      this.activeAttendance = activeAttendance;
-    //    })
-    //    .catch((error) => {
-    //      alert(error.message);
-    //    });
-
     this.fetchAttendance();
     this._attendanceService.attendanceUpdateNeeded.subscribe(() => {
       this.fetchSearchAttendance(this.getDate());
     });
-
   }
 
   fetchAttendance(): void {
-
     this._attendanceService.getAttendance().subscribe({
       next: (attendance) => {
         this.currentDate = attendance.data.map((x) => x.dateCreated.split('T')[0]);
@@ -63,53 +51,155 @@ export class AttendanceTableComponent implements OnInit {
   }
 
   fetchSearchAttendance(date: any) {
-    this._attendanceService.searchAttendance(date).subscribe({
+    this._attendanceService.searchAttendanceDate(date).subscribe({
       next: (attendance: any) => {
-        this.activeAttendance = attendance.data.flatMap(x => x.attendances);
+
+        this.activeAttendance = attendance.data.flatMap((x) => x.attendances);
+        this.setAttendanceId(attendance.data.map((x) => x.id));
+
       },
       error: (error) => alert(error.message),
     });
+  }
+
+  setAttendanceId(id: string) {
+    this.id = id;
+  }
+
+  getAttendanceId() {
+    return this.id;
   }
 
   toggleDropDown() {
     this.isDropDownOpen = !this.isDropDownOpen;
   }
 
-  toggleFacultyDialog() {
-    this.isAddFacultyDialogOpen = !this.isAddFacultyDialogOpen;
-  }
-
   onAddFaculty() {
-    const { rfid, displayName, subject, email } = this.form.value;
+    this.submitted = false;
+    const { rfid } = this.form.value;
 
-    const faculty = {
-      rfid: rfid,
-      displayName: displayName,
-      subject: subject,
-      email: email,
-    };
+    this._accountService.getAllFaculty(rfid).subscribe({
+      next: (f: any) => {
+        const id = f.map((x) => x.id);
+        const displayNameFaculty = f.map((x) => x.displayName);
+        const subjectFaculty = f.map((x) => x.subject);
+        const rfidFaculty = f.map((x) => x.rfid);
 
-    // stop here if form is invalid
-    if (this.form.invalid) {
-      return;
-    }
+        let time = '';
+        this._attendanceService.getGetTimeAndDate().subscribe({
+          next: (t) => {
+            time = t;
+          },
+        });
 
-    // this._accountService.registerFaculty(faculty).subscribe({
-    //   complete: () => {
-    //     alert('Successfully Created');
-    //     this._accountService.userUpdateNeeded.next(faculty);
-    //     this.toggleFacultyDialog();
-    //   },
-    // });
+        //* Done checking if the id exist
+        if (id[0] == null) {
+          this.form.reset();
+          alert('Not yet registered');
+          return;
+        }
+
+        
+
+        //* Search muna if nag exist in per day
+        this._attendanceService.searchAttendance(rfidFaculty, this.getAttendanceId()[0]).subscribe({
+          next: (updateFaculty) => {
+            const timeOut = updateFaculty.map((x) => x.timeOut);
+            const timeIn = updateFaculty.map((x) => x.timeIn);
+            const id = updateFaculty.map((x) => x.id);
+            const rfid = updateFaculty.map((x) => x.rfid);
+            console.log('rfid=' + timeOut + '------' + timeIn);
+
+
+            if (rfid == '') {
+              //* Create once per day
+              let faculty = {
+                teachName: displayNameFaculty[0],
+                subject: subjectFaculty[0],
+                rfid: rfidFaculty[0],
+                timeOut: null,
+                numberOfHour: 0,
+                attendanceDateId: this.getAttendanceId()[0],
+              };
+
+              this._attendanceService.createAttendance(faculty).subscribe({
+                complete: () => {
+                  this.form.reset();
+                  this._attendanceService.attendanceUpdateNeeded.next();
+                },
+                error: (error) => console.log(error),
+              });
+            } else {
+              
+              const timestamp1: any = new Date(time);
+              const timestamp2: any = new Date(timeIn[0]);
+
+              // Calculate the difference in milliseconds
+              const timeDiffInHours = timestamp1 - timestamp2;
+
+              // Convert milliseconds to seconds
+              const hours = Math.floor(timeDiffInHours / (1000 * 60 * 60));
+             
+              let faculty = {
+                id: id[0],
+                teachName: displayNameFaculty[0],
+                subject: subjectFaculty[0],
+                rfid: rfidFaculty[0],
+                timeIn: timeIn[0],
+                timeOut: time,
+                numberOfHour: hours,
+                attendanceDateId: this.getAttendanceId()[0],
+              };
+              this._attendanceService.updateAttendance(faculty).subscribe({
+                complete: () => {
+                  this.form.reset();
+                  this._attendanceService.attendanceUpdateNeeded.next();
+                },
+                error: (error) => console.log(error),
+              });
+            }
+          },
+          error: (error) => console.log(error),
+        });
+
+        //  if (timeOut == '') {
+        //    let faculty = {
+        //      id: id[0],
+        //      teachName: displayName[0],
+        //      subject: subject[0],
+        //      rfid: rfid[0],
+        //      timeIn: timeIn[0],
+        //      timeOut: time,
+        //      numberOfHour: 0,
+        //      attendanceDateId: this.getAttendanceId()[0],
+        //    };
+
+        //    this._attendanceService.updateAttendance(faculty).subscribe({
+        //      complete: () => {
+        //        this.form.reset();
+        //        this._attendanceService.attendanceUpdateNeeded.next();
+        //      },
+        //      error: (error) => console.log(error),
+        //    });
+        //  } else {
+        //    this.form.reset();
+        //  }
+      },
+    });
   }
 
-  setDate(d: string) {
-    this.date = d;
-    this._attendanceService.attendanceUpdateNeeded.next();
-  }
+  // setDate(d: string) {
+  //   this.date = d;
+  //   this._attendanceService.attendanceUpdateNeeded.next();
+
+  // }
 
   getDate() {
     return this.date;
   }
-}
 
+  onDateChange(selectedDate: string) {
+    this.date = selectedDate;
+    this._attendanceService.attendanceUpdateNeeded.next();
+  }
+}
