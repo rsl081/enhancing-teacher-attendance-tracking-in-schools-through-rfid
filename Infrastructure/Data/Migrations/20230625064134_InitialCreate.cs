@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Data.Migrations
 {
-    public partial class InitalCreate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -172,7 +172,7 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserPhoto",
+                name: "UserPhotos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -182,9 +182,9 @@ namespace Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserPhoto", x => x.Id);
+                    table.PrimaryKey("PK_UserPhotos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserPhoto_AspNetUsers_AppUserId",
+                        name: "FK_UserPhotos_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -194,11 +194,12 @@ namespace Infrastructure.Data.Migrations
                 name: "Attendances",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TeachName = table.Column<string>(type: "text", nullable: true),
                     Subject = table.Column<string>(type: "text", nullable: true),
+                    Rfid = table.Column<string>(type: "text", nullable: true),
                     TimeIn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TimeOut = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    TimeOut = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     NumberOfHour = table.Column<int>(type: "integer", nullable: false),
                     AttendanceDateId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -256,8 +257,8 @@ namespace Infrastructure.Data.Migrations
                 column: "AttendanceDateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserPhoto_AppUserId",
-                table: "UserPhoto",
+                name: "IX_UserPhotos_AppUserId",
+                table: "UserPhotos",
                 column: "AppUserId",
                 unique: true);
         }
@@ -283,7 +284,7 @@ namespace Infrastructure.Data.Migrations
                 name: "Attendances");
 
             migrationBuilder.DropTable(
-                name: "UserPhoto");
+                name: "UserPhotos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -17,6 +17,9 @@ namespace API.Helper
 
             CreateMap<AttendanceDate, AttendanceDateToReturn>()
                 .ForMember(s => s.Attendances, o => o.MapFrom(s => s.Attendances));
+        
+
+            CreateMap<CreateAttendanceDto, Attendance>();
         }
     }
 }

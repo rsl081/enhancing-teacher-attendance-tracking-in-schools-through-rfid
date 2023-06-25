@@ -2,16 +2,41 @@
   <div class="mb-4 flex items-center justify-between">
 
     <div class="flex-col items-center">
-      <h3 class="text-md font-bold text-gray-900 dark:text-night-50">{{date}}</h3>
+      <!-- <h3 class="text-md font-bold text-gray-900 dark:text-night-50">{{date}}</h3> -->
+      <input type="date"  (input)="onDateChange($event.target.value)" [value]="date" class="text-md font-bold text-gray-900 dark:text-night-50" />
     </div>
     
     <!-- <button
       (click)="toggleFacultyDialog()"
-      class="flex-none rounded-md bg-green-100 px-4 py-2.5 text-xs font-semibold text-gray-500 hover:bg-green-200 dark:bg-night-600 dark:text-night-200 dark:hover:bg-night-500">
-      Add Faculty
+      class="flex-none rounded-md h-12 bg-green-100 px-4 py-2.5 text-xs font-semibold text-gray-500 hover:bg-green-200 dark:bg-night-600 dark:text-night-200 dark:hover:bg-night-500">
+      Create Attendance Log
     </button> -->
 
-   <div class="form__group mb-4 z-50"> 
+    <form [formGroup]="form" (ngSubmit)="onAddFaculty()">
+      <div>
+          <div class="form__group mb-2 w-full z-0"> 
+
+            <div class="relative">
+              <input
+                type="text"
+                id="rfid"
+                class="peer block"
+                autofocus
+                placeholder=" "
+                formControlName="rfid" />
+              <label
+                for="rfid"
+                class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
+                RFID
+              </label>
+            </div>
+            
+          </div>  
+      
+      </div>
+    </form>
+
+    <!-- <div class="form__group mb-4 z-50"> 
       <button 
             (click)="toggleDropDown()"
             type="button" 
@@ -40,7 +65,7 @@
         </div>
       </div>
 
-    </div>
+    </div> -->
 
 
   </div>
@@ -74,131 +99,5 @@
     </table>
   </div>
 </div>
-<div *ngFor="let attendanceItem of test">
-   <div *ngFor="let x of test">
-
-     <p>{{ x.id }}</p>
-   </div>
-   
-</div>
-<!-- Add Product Dialog -->
-<div *ngIf="isAddFacultyDialogOpen">
-  <div
-    class="z-20 fixed top-0 left-0 right-0 bottom-0 opacity-50 bg-neutral-900 dark:opacity-80"
-  ></div>
-  <form [formGroup]="form" (ngSubmit)="onAddFaculty()">
-    <div
-      class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg flex flex-col gap-2 justify-center items-center z-40 fixed w-11/12 sm:w-1/2 lg:w-1/3 xl:w-1/3 top-0 left-0 right-0 bottom-0 m-auto h-min p-4"
-    >
-      <h2 class="mb-4 font-bold text-xl text-gray-600 dark:text-white">
-        Create New Faculty
-      </h2>
-
-        <div class="form__group mb-2 w-full z-0"> 
-
-          <div class="relative">
-            <input
-              type="text"
-              id="rfid"
-              class="peer block"
-              [ngClass]="{ 'is__invalid-input': submitted && f['rfid'].errors }"
-              placeholder=" "
-              formControlName="rfid" />
-            <label
-              for="rfid"
-              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
-              RFID
-            </label>
-          </div>
-          <div *ngIf="submitted && f['rfid'].errors" class="is__invalid-error">
-            <div *ngIf="f['rfid'].errors['required']">Required field</div>
-          </div>
-        </div>  
-        
-        <div class="form__group mb-2 w-full z-0">       
-          <div class="relative">
-            <input
-              type="text"
-              id="displayName"
-              class="peer block"
-              [ngClass]="{ 'is__invalid-input': submitted && f['displayName'].errors }"
-              placeholder=" "
-              formControlName="displayName" />
-            <label
-              for="displayName"
-              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
-              Name
-            </label>
-          </div>
-          <div *ngIf="submitted && f['displayName'].errors" class="is__invalid-error">
-            <div *ngIf="f['displayName'].errors['required']">Required field</div>
-          </div>
-        </div>  
-
-        <div class="form__group mb-4 w-full z-0">       
-          <div class="relative">
-            <input
-              type="text"
-              id="subject"
-              class="peer block"
-              [ngClass]="{ 'is__invalid-input': submitted && f['subject'].errors }"
-              placeholder=" "
-              formControlName="subject" />
-            <label
-              for="subject"
-              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
-              Subject
-            </label>
-          </div>
-          <div *ngIf="submitted && f['subject'].errors" class="is__invalid-error">
-            <div *ngIf="f['subject'].errors['required']">Required field</div>
-          </div>
-        </div>  
-
-        <div class="form__group mb-4 w-full z-0">       
-          <div class="relative">
-            <input
-              type="text"
-              id="email"
-              class="peer block"
-              [ngClass]="{ 'is__invalid-input': submitted && f['email'].errors }"
-              placeholder=" "
-              formControlName="email" />
-            <label
-              for="email"
-              class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary-500 dark:bg-night-700 dark:text-night-200">
-              Email
-            </label>
-          </div>
-          <div *ngIf="submitted && f['email'].errors" class="is__invalid-error">
-            <div *ngIf="f['email'].errors['required']">Required field</div>
-          </div>
-        </div>  
-
-      <div class="flex w-full gap-3">
-        <button
-          class="flex-1 max-w-xs rounded-full relative overflow-hidden inline-flex group items-center justify-center bg-primary-500 text-white px-10 py-2"
-        >
-          <span
-            class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-80 group-hover:h-80 lg:group-hover:w-56 lg:group-hover:h-56 xl:group-hover:w-80 xl:group-hover:h-80 opacity-10"
-          ></span>
-          <span class="relative">Add</span>
-        </button>
-        <button
-          (click)="toggleFacultyDialog()"
-          class="flex-1 max-w-xs rounded-full relative overflow-hidden inline-flex group items-center justify-center bg-[#888888] text-white px-10 py-2"
-        >
-          <span
-            class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-80 group-hover:h-80 lg:group-hover:w-56 lg:group-hover:h-56 xl:group-hover:w-80 xl:group-hover:h-80 opacity-10"
-          ></span>
-          <span 
-            class="relative">Cancel</span>
-        </button>
-      </div>
-    </div>
-  </form>
-
-</div>
-
 
 

@@ -101,13 +101,24 @@ namespace API.Controllers
         }
 
         [HttpGet("faculty/all")]
-        public async Task<ActionResult<Pagination<UserDto>>> GetAllStudent()
+        public async Task<ActionResult<Pagination<UserDto>>> GetAllStudent(
+            string search
+        )
         {
 
             var user = await _userManager.Users
                 .Include(p => p.UserPhoto)
                 .Where(u => u.UserRoles.All(r => r.Role.Name == "Faculty"))
                 .ToListAsync();
+
+            if (!String.IsNullOrEmpty(search))
+            {
+              
+                user = user.Where(p => 
+                                    p.Rfid == search)
+                                    .ToList();
+            }
+            
           
             var totalItems = user.Count();
 
