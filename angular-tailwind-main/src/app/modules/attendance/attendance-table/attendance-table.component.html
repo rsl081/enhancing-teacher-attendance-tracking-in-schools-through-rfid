@@ -9,8 +9,8 @@
     <button
       (click)="toggleAttendanceDialog()"
       [disabled]="isDisabled"
-      [ngClass]="{'bg-gray-300': isBgGray, 'disabled': isDisabled}"
-      class="flex-none rounded-md h-12 bg-primary-200 px-4 py-2.5 text-xs font-semibold text-gray-500 dark:bg-night-600 dark:text-night-200 dark:hover:bg-night-500">
+      [ngClass]="{ 'bg-gray-200': isBgGray, 'bg-primary-200': !isBgGray , 'disabled': isDisabled}"
+      class="flex-none rounded-md h-12 px-4 py-2.5 text-xs font-semibold text-gray-500 dark:bg-night-600 dark:text-night-200 dark:hover:bg-night-500">
       {{attendanceText}}
     </button>
 
