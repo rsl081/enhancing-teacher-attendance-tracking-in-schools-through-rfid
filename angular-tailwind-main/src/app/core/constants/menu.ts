@@ -9,12 +9,12 @@ export class Menu {
         {
           icon: 'assets/icons/outline/user-group.svg',
           label: 'Attendance',
-          route: '/attendance',
+          route: '/menu/attendance',
         },
         {
           icon: 'assets/icons/outline/users.svg',
           label: 'Faculty',
-          route: '/faculty',
+          route: '/menu/faculty',
         },
       ],
     },

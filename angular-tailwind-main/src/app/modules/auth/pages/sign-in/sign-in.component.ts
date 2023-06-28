@@ -51,7 +51,7 @@ export class SignInComponent implements OnInit {
     this._accountService.login(credentials).subscribe({
       error: () => alert('Unauthorized'),
       complete: () => {
-        this._router.navigate(['/']);
+        this._router.navigate(['/menu/attendance']);
       },
     });
   }

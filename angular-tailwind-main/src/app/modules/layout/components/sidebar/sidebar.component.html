@@ -5,7 +5,7 @@
     <!-- Logo -->
     <div class="relative h-10">
       <div class="flex items-center justify-center" *ngIf="showSideBar$ | async">
-        <b class="text-sm font-bold">
+        <b class="text-sm font-bold dark:text-white">
           {{ appJson.displayName }}
         </b>
       </div>
@@ -26,7 +26,28 @@
     <app-sidebar-menu></app-sidebar-menu>
   </div>
 
+  
   <div class="mx-4 my-4 space-y-1">
+    <!-- Dark Theme -->
+    <div
+      (click)="toggleTheme()"
+      class="group flex h-9 cursor-pointer items-center justify-start rounded p-2 hover:bg-gray-100 dark:hover:bg-night-600">
+      <svg-icon
+        [src]="themeService.isDark ? 'assets/icons/outline/sun.svg' : 'assets/icons/outline/moon.svg'"
+        [svgClass]="'h-5 w-5 text-gray-400 dark:text-night-400'">
+      </svg-icon>
+  
+      <a class="ml-3 truncate text-xs font-semibold tracking-wide text-gray-600 focus:outline-none dark:text-night-100">
+        {{ themeService.isDark ? 'Light Theme' : 'Dark Theme' }}
+      </a>
+  
+      <div class="fixed w-full" *ngIf="!(showSideBar$ | async)">
+        <span
+          class="z-1 absolute left-12 -top-4 w-auto min-w-max origin-left scale-0 rounded-md bg-black p-2 text-xs font-bold text-white shadow-md transition-all duration-200 group-hover:scale-100 dark:bg-white dark:text-night-900">
+          Theme
+        </span>
+      </div>
+    </div>
     <!-- Sign out -->
     <div
       class="group flex h-9 cursor-pointer items-center justify-start rounded p-2 hover:bg-gray-100 dark:hover:bg-night-600">
