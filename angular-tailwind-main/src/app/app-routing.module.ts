@@ -3,11 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'menu',
     loadChildren: () => import('./modules/layout/layout.module').then((m) => m.LayoutModule),
   },
   {
-    path: 'auth',
+    path: '',
     loadChildren: () => import('./modules/auth/auth.module').then((m) => m.AuthModule),
   },
   { path: '**', redirectTo: 'error/404' },

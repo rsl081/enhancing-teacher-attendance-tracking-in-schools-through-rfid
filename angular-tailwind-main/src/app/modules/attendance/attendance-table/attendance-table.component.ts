@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from 'src/app/core/services/account.service';
 import { AttendanceService } from 'src/app/core/services/attendance.service';
+import * as ExcelJS from 'exceljs/dist/exceljs.min.js'
 
 @Component({
   selector: '[attendance-table]',
@@ -18,6 +19,9 @@ export class AttendanceTableComponent implements OnInit {
   form: FormGroup;
   id: string;
   timeOut: string;
+  isDisabled: boolean = false;
+  isBgGray: boolean = false;
+  attendanceText: string;
 
   constructor(
     private _accountService: AccountService,
@@ -44,6 +48,7 @@ export class AttendanceTableComponent implements OnInit {
       next: (attendance) => {
         this.currentDate = attendance.data.map((x) => x.dateCreated.split('T')[0]);
         this.date = this.currentDate[0].split('T')[0];
+
         this.fetchSearchAttendance(this.date);
       },
       error: (error) => alert(error.message),
@@ -53,10 +58,21 @@ export class AttendanceTableComponent implements OnInit {
   fetchSearchAttendance(date: any) {
     this._attendanceService.searchAttendanceDate(date).subscribe({
       next: (attendance: any) => {
-
         this.activeAttendance = attendance.data.flatMap((x) => x.attendances);
         this.setAttendanceId(attendance.data.map((x) => x.id));
 
+        let dateToCompare = attendance.data.map((x) => x.dateCreated.split('T')[0]);
+        if (this.date == dateToCompare[0]) {
+          this.isDisabled = true;
+          this.isBgGray = true;
+          this.attendanceText = "Attendance's Log";
+          console.log('exist')
+        } else {
+          this.isDisabled = false;
+          this.isBgGray = false;
+          this.attendanceText = 'Create Attendance Log';
+          console.log('not exist')
+        }
       },
       error: (error) => alert(error.message),
     });
@@ -99,8 +115,6 @@ export class AttendanceTableComponent implements OnInit {
           return;
         }
 
-        
-
         //* Search muna if nag exist in per day
         this._attendanceService.searchAttendance(rfidFaculty, this.getAttendanceId()[0]).subscribe({
           next: (updateFaculty) => {
@@ -109,7 +123,6 @@ export class AttendanceTableComponent implements OnInit {
             const id = updateFaculty.map((x) => x.id);
             const rfid = updateFaculty.map((x) => x.rfid);
             console.log('rfid=' + timeOut + '------' + timeIn);
-
 
             if (rfid == '') {
               //* Create once per day
@@ -130,7 +143,6 @@ export class AttendanceTableComponent implements OnInit {
                 error: (error) => console.log(error),
               });
             } else {
-              
               const timestamp1: any = new Date(time);
               const timestamp2: any = new Date(timeIn[0]);
 
@@ -139,7 +151,7 @@ export class AttendanceTableComponent implements OnInit {
 
               // Convert milliseconds to seconds
               const hours = Math.floor(timeDiffInHours / (1000 * 60 * 60));
-             
+
               let faculty = {
                 id: id[0],
                 teachName: displayNameFaculty[0],
@@ -161,38 +173,9 @@ export class AttendanceTableComponent implements OnInit {
           },
           error: (error) => console.log(error),
         });
-
-        //  if (timeOut == '') {
-        //    let faculty = {
-        //      id: id[0],
-        //      teachName: displayName[0],
-        //      subject: subject[0],
-        //      rfid: rfid[0],
-        //      timeIn: timeIn[0],
-        //      timeOut: time,
-        //      numberOfHour: 0,
-        //      attendanceDateId: this.getAttendanceId()[0],
-        //    };
-
-        //    this._attendanceService.updateAttendance(faculty).subscribe({
-        //      complete: () => {
-        //        this.form.reset();
-        //        this._attendanceService.attendanceUpdateNeeded.next();
-        //      },
-        //      error: (error) => console.log(error),
-        //    });
-        //  } else {
-        //    this.form.reset();
-        //  }
       },
     });
   }
-
-  // setDate(d: string) {
-  //   this.date = d;
-  //   this._attendanceService.attendanceUpdateNeeded.next();
-
-  // }
 
   getDate() {
     return this.date;
@@ -202,4 +185,61 @@ export class AttendanceTableComponent implements OnInit {
     this.date = selectedDate;
     this._attendanceService.attendanceUpdateNeeded.next();
   }
+
+  toggleAttendanceDialog() {
+    // console.log('date==' + this.getDate());
+    const date = {
+      dateCreated: this.getDate,
+    };
+
+    this._attendanceService.createAttendanceDate(date).subscribe({
+      complete: () => {
+        alert('Successfully Created');
+        this.isDisabled = true;
+        this.isBgGray = true;
+        this.attendanceText = "Attendance's Log";
+      },
+    });
+  }
+
+  exportToExcel() {
+    //  for (let row = 0; row <= this.activeAttendance.length; row++) {
+    //    console.log(this.activeAttendance[0].teachName);
+    //  }
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet 1');
+
+    worksheet.getCell('A1').value = 'Faculty Name';
+    worksheet.getCell('B1').value = 'Subject';
+    worksheet.getCell('C1').value = 'Time In';
+    worksheet.getCell('D1').value = 'Time Out';
+    worksheet.getCell('E1').value = 'No Of Hours';
+    
+    let ctr = 0
+    // Loop to generate values in row 2
+    for (let row = 2; row <= this.activeAttendance.length + 1; row++) {
+      for (let col = 1; col <= 5; col++) {
+        worksheet.getCell(`A${row}`).value = this.activeAttendance[ctr].teachName;
+        worksheet.getCell(`B${row}`).value = this.activeAttendance[ctr].subject;
+        worksheet.getCell(`C${row}`).value = this.activeAttendance[ctr].timeIn;
+        worksheet.getCell(`D${row}`).value = this.activeAttendance[ctr].timeOut;
+        worksheet.getCell(`E${row}`).value = this.activeAttendance[ctr].numberOfHour;
+      }
+      ctr++;
+    }
+
+    workbook.xlsx.writeBuffer().then((buffer: any) => {
+      this.saveAsExcelFile(buffer, 'attendance.xlsx');
+    });
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+  }
+
 }
