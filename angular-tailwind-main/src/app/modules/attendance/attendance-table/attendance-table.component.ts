@@ -41,6 +41,8 @@ export class AttendanceTableComponent implements OnInit {
     this._attendanceService.attendanceUpdateNeeded.subscribe(() => {
       this.fetchSearchAttendance(this.getDate());
     });
+
+    this.attendanceText = 'Create Attendance Log';
   }
 
   fetchAttendance(): void {
@@ -66,12 +68,12 @@ export class AttendanceTableComponent implements OnInit {
           this.isDisabled = true;
           this.isBgGray = true;
           this.attendanceText = "Attendance's Log";
-          console.log('exist')
+          console.log('exist');
         } else {
           this.isDisabled = false;
           this.isBgGray = false;
           this.attendanceText = 'Create Attendance Log';
-          console.log('not exist')
+          console.log('not exist');
         }
       },
       error: (error) => alert(error.message),
@@ -189,7 +191,7 @@ export class AttendanceTableComponent implements OnInit {
   toggleAttendanceDialog() {
     // console.log('date==' + this.getDate());
     const date = {
-      dateCreated: this.getDate,
+      dateCreated: this.getDate(),
     };
 
     this._attendanceService.createAttendanceDate(date).subscribe({
@@ -198,6 +200,7 @@ export class AttendanceTableComponent implements OnInit {
         this.isDisabled = true;
         this.isBgGray = true;
         this.attendanceText = "Attendance's Log";
+        this._attendanceService.attendanceUpdateNeeded.next();
       },
     });
   }
