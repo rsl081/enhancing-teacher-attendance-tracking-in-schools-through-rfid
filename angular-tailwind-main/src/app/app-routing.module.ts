@@ -7,6 +7,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/layout/layout.module').then((m) => m.LayoutModule),
   },
   {
+    path: 'user',
+    loadChildren: () => import('./modules/front-end/front-end.module').then((m) => m.FrontEndModule),
+  },
+  {
     path: '',
     loadChildren: () => import('./modules/auth/auth.module').then((m) => m.AuthModule),
   },

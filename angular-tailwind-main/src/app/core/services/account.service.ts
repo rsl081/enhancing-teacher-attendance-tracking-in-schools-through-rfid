@@ -33,6 +33,10 @@ export class AccountService {
   getAllFaculty(rfid?: any) {
     return this.http.get<UserRoot>(this.baseURL + 'account/faculty/all?search=' + rfid).pipe(map((f) => f.data));
   }
+  
+  getSearchFaculty(rfid?: any) {
+    return this.http.get<UserRoot>(this.baseURL + 'account/faculty/search?search=' + rfid).pipe(map((f) => f.data));
+  }
 
   deleteFaculty(id: any) {
     return this.http.delete<any>(this.baseURL + 'account/faculty/delete/' + id);

@@ -1,0 +1,22 @@
+.hero-image{
+  height: max(100%, 500px);
+  clip-path: polygon(0 100%, 100% 100%, 100% 0%, 0% 0%);
+  background-image: url(/assets/images/cover.png);
+}
+
+.bg-gradient {
+  background: #2a2a2a;
+  opacity: 0.8;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

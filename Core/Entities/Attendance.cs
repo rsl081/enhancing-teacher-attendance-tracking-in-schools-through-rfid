@@ -10,6 +10,8 @@ namespace Core.Entities
         public DateTime TimeIn { get; set; } = DateTime.Now;
         public DateTime? TimeOut { get; set; }
         public int NumberOfHour { get; set; }
+        public bool isLooping { get; set; }
+        public bool isNowUpdated { get; set; }
         [JsonIgnore]
         public AttendanceDate AttendanceDate { get; set; }
         public Guid AttendanceDateId { get; set; }
