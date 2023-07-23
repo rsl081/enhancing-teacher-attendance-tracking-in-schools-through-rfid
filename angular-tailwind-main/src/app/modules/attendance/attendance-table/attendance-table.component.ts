@@ -104,7 +104,7 @@ export class AttendanceTableComponent implements OnInit {
         const rfidFaculty = f.map((x) => x.rfid);
 
         let time = '';
-        this._attendanceService.getGetTimeAndDate().subscribe({
+        this._attendanceService.getGetTimeAndDateNow().subscribe({
           next: (t) => {
             time = t;
           },
@@ -124,7 +124,6 @@ export class AttendanceTableComponent implements OnInit {
             const timeIn = updateFaculty.map((x) => x.timeIn);
             const id = updateFaculty.map((x) => x.id);
             const rfid = updateFaculty.map((x) => x.rfid);
-            console.log('rfid=' + timeOut + '------' + timeIn);
 
             if (rfid == '') {
               //* Create once per day
@@ -136,6 +135,8 @@ export class AttendanceTableComponent implements OnInit {
                 numberOfHour: 0,
                 attendanceDateId: this.getAttendanceId()[0],
               };
+
+              
 
               this._attendanceService.createAttendance(faculty).subscribe({
                 complete: () => {
@@ -164,6 +165,9 @@ export class AttendanceTableComponent implements OnInit {
                 numberOfHour: hours,
                 attendanceDateId: this.getAttendanceId()[0],
               };
+
+              console.log('faculty!' + faculty.timeOut);
+
               this._attendanceService.updateAttendance(faculty).subscribe({
                 complete: () => {
                   this.form.reset();

@@ -36,18 +36,18 @@ export class AttendanceService {
     return this.http.put<any>(this.baseURL + 'attendance/the-attendance', body).pipe((s) => s);
   }
 
-  searchAttendance(search: any,searchAttendanceDateId:any) {
+  searchAttendance(search: any, searchAttendanceDateId: any) {
     return this.http.get<any>(
-      this.baseURL +
-        'attendance/the-attendance/?search=' +
-        search +
-        '&searchAttendanceDateId=' +
-        searchAttendanceDateId,
+      this.baseURL + 'attendance/the-attendance/?rfid=' + search + '&searchAttendanceDateId=' + searchAttendanceDateId,
     );
   }
 
   //* DateTime
-  getGetTimeAndDate(): Observable<any> {
+  getGetTimeAndDate() {
     return this.http.get<any>(this.baseURL + 'attendance/datetime').pipe((s) => s);
+  }
+
+  getGetTimeAndDateNow(): Observable<any> {
+    return this.http.get<any>(this.baseURL + 'attendance/datetime-now').pipe((s) => s);
   }
 }

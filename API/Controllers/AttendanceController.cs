@@ -30,7 +30,7 @@ namespace API.Controllers
             var attendance = 
                     await _dataContext.AttendanceDates
                                     .Include(x => x.Attendances)
-                                    .OrderBy(x => x.DateCreated)
+                                    .OrderByDescending(x => x.DateCreated)
                                     .ToListAsync();
             
             if (!String.IsNullOrEmpty(search))
@@ -61,16 +61,16 @@ namespace API.Controllers
         }
 
         [HttpGet("the-attendance")]
-        public async Task<ActionResult> GetAttendances(string search, string searchAttendanceDateId)
+        public async Task<ActionResult> GetAttendances(string rfid, string searchAttendanceDateId)
         {
             var attendance = 
                     await _dataContext.Attendances
                                     .ToListAsync();
 
-            if (!String.IsNullOrEmpty(search))
+            if (!String.IsNullOrEmpty(rfid))
             {
                 attendance = attendance.Where(p => 
-                                    p.Rfid == search && 
+                                    p.Rfid == rfid && 
                                     p.AttendanceDateId.ToString() == searchAttendanceDateId)
                                     .ToList();
                 return Ok(attendance);
@@ -83,7 +83,6 @@ namespace API.Controllers
         public async Task<ActionResult> CreateAttendance(
             CreateAttendanceDto attendanceCreate)
         {
-            
             var attendanceCreateDto = _mapper.Map<CreateAttendanceDto, Attendance>(attendanceCreate);
 
              // Set nullable DateTime property to null if it has a default value
@@ -95,7 +94,7 @@ namespace API.Controllers
             _dataContext.Attendances.Add(attendanceCreateDto);
             await _dataContext.SaveChangesAsync();
 
-            return Ok();
+            return Ok(attendanceCreate);
         }
 
         [HttpPut("the-attendance")]
@@ -108,7 +107,7 @@ namespace API.Controllers
             _dataContext.Attendances.Update(attendanceCreateDto);
             await _dataContext.SaveChangesAsync();
 
-            return Ok();
+            return Ok(attendanceCreate);
         }
 
         [HttpDelete("the-attendance/{id}")]
@@ -124,13 +123,31 @@ namespace API.Controllers
         }
 
         [HttpGet("datetime")]
-        public ActionResult GatDateTime()
+        public async Task<ActionResult> GatDateTime()
+        {   
+            var date = DateTime.Now;
+
+            var attendance = 
+                    await _dataContext.AttendanceDates
+                                    .OrderByDescending(x => x.DateCreated)
+                                    .FirstOrDefaultAsync();
+
+            
+            if(attendance != null && attendance.DateCreated.ToShortDateString() == date.Date.ToShortDateString()) {
+                return Ok(new { date = date.Date.ToShortDateString() });
+            }
+            
+           
+            return Ok(new { date = "" }); 
+        }
+
+        [HttpGet("datetime-now")]
+        public ActionResult GatDateTimeNow()
         {   
             var date = DateTime.Now;
 
             return Ok(date);
         }
-
 
 
     }
