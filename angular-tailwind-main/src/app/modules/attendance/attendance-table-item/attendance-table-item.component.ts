@@ -15,6 +15,7 @@ export class AttendanceTableItemComponent implements OnInit {
   isEditFacultyDialogOpen = false;
   isImgDialogOpen = false;
   @Input() attendance: any;
+  @Input() date: any;
   form: FormGroup;
   uploader: FileUploader;
   baseURL = environment.apiUrl;
