@@ -61,22 +61,59 @@ namespace API.Controllers
         }
 
         [HttpGet("the-attendance")]
-        public async Task<ActionResult> GetAttendances(string rfid, string searchAttendanceDateId)
+        public async Task<ActionResult> GetAttendances(string search, string searchAttendanceDateId)
         {
             var attendance = 
                     await _dataContext.Attendances
                                     .ToListAsync();
 
-            if (!String.IsNullOrEmpty(rfid))
+            if (!String.IsNullOrEmpty(search))
             {
                 attendance = attendance.Where(p => 
-                                    p.Rfid == rfid && 
+                                    (p.Rfid == search || 
+                                    p.TeachName.ToLower().Contains(search.ToLower())) && 
                                     p.AttendanceDateId.ToString() == searchAttendanceDateId)
                                     .ToList();
                 return Ok(attendance);
             }
 
             return Ok();
+        }
+
+        [HttpGet("the-attendance-table")]
+        public async Task<ActionResult> GetAttendancesTable(
+            string search, 
+            string searchStartDate,  
+            string searchEndDateStr,
+            string searchAttendanceDateId)
+        {
+            var attendance = 
+                    await _dataContext.Attendances
+                                    .Include(x => x.AttendanceDate)
+                                    .ToListAsync();
+            
+            if (!String.IsNullOrEmpty(searchStartDate) && !String.IsNullOrEmpty(searchEndDateStr))
+            {
+
+                DateTime startDate = DateTime.Parse(searchStartDate);
+                DateTime endDate = DateTime.Parse(searchEndDateStr).Date.AddDays(1); // Include the next day
+
+                
+                attendance = attendance.Where(p => p.AttendanceDate.DateCreated.Date >= startDate.Date 
+                                        && p.AttendanceDate.DateCreated.Date < endDate.Date
+                                ).ToList();
+            }
+
+            if (!String.IsNullOrEmpty(search))
+            {
+                attendance = attendance.Where(p => 
+                                    (p.Rfid == search || 
+                                    p.TeachName.ToLower().Contains(search.ToLower())) && 
+                                    p.AttendanceDateId.ToString() == searchAttendanceDateId)
+                                    .ToList();
+            }
+
+            return Ok(attendance);
         }
 
         [HttpPost("the-attendance")]

@@ -23,6 +23,9 @@ export class AttendanceTableComponent implements OnInit {
   isBgGray: boolean = false;
   attendanceText: string;
 
+  searchStartDate = '';
+  searchEndDate = '';
+
   constructor(
     private _accountService: AccountService,
     private _formBuilder: FormBuilder,
@@ -31,10 +34,7 @@ export class AttendanceTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this._formBuilder.group({
-      rfid: ['', Validators.required],
-      displayName: ['', Validators.required],
-      subject: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      search: ['', Validators.required],
     });
 
     this.fetchAttendance();
@@ -94,94 +94,35 @@ export class AttendanceTableComponent implements OnInit {
 
   onAddFaculty() {
     this.submitted = false;
-    const { rfid } = this.form.value;
+    const { search } = this.form.value;
 
-    this._accountService.getAllFaculty(rfid).subscribe({
-      next: (f: any) => {
-        const id = f.map((x) => x.id);
-        const displayNameFaculty = f.map((x) => x.displayName);
-        const subjectFaculty = f.map((x) => x.subject);
-        const rfidFaculty = f.map((x) => x.rfid);
-
-        let time = '';
-        this._attendanceService.getGetTimeAndDateNow().subscribe({
-          next: (t) => {
-            time = t;
-          },
-        });
-
-        //* Done checking if the id exist
-        if (id[0] == null) {
-          this.form.reset();
-          alert('Not yet registered');
-          return;
-        }
-
-        //* Search muna if nag exist in per day
-        this._attendanceService.searchAttendance(rfidFaculty, this.getAttendanceId()[0]).subscribe({
-          next: (updateFaculty) => {
-            const timeOut = updateFaculty.map((x) => x.timeOut);
-            const timeIn = updateFaculty.map((x) => x.timeIn);
-            const id = updateFaculty.map((x) => x.id);
-            const rfid = updateFaculty.map((x) => x.rfid);
-
-            if (rfid == '') {
-              //* Create once per day
-              let faculty = {
-                teachName: displayNameFaculty[0],
-                subject: subjectFaculty[0],
-                rfid: rfidFaculty[0],
-                timeOut: null,
-                numberOfHour: 0,
-                attendanceDateId: this.getAttendanceId()[0],
-              };
-
-              
-
-              this._attendanceService.createAttendance(faculty).subscribe({
-                complete: () => {
-                  this.form.reset();
-                  this._attendanceService.attendanceUpdateNeeded.next();
-                },
-                error: (error) => console.log(error),
-              });
-            } else {
-              const timestamp1: any = new Date(time);
-              const timestamp2: any = new Date(timeIn[0]);
-
-              // Calculate the difference in milliseconds
-              const timeDiffInHours = timestamp1 - timestamp2;
-
-              // Convert milliseconds to seconds
-              const hours = Math.floor(timeDiffInHours / (1000 * 60 * 60));
-
-              let faculty = {
-                id: id[0],
-                teachName: displayNameFaculty[0],
-                subject: subjectFaculty[0],
-                rfid: rfidFaculty[0],
-                timeIn: timeIn[0],
-                timeOut: time,
-                numberOfHour: hours,
-                attendanceDateId: this.getAttendanceId()[0],
-              };
-
-              console.log('faculty!' + faculty.timeOut);
-
-              this._attendanceService.updateAttendance(faculty).subscribe({
-                complete: () => {
-                  this.form.reset();
-                  this._attendanceService.attendanceUpdateNeeded.next();
-                },
-                error: (error) => console.log(error),
-              });
-            }
-          },
-          error: (error) => console.log(error),
-        });
+    //* Search muna if nag exist in per day
+    this._attendanceService.searchAttendanceTable(search, '', '', this.getAttendanceId()[0]).subscribe({
+      next: (updateFaculty) => {
+        this.activeAttendance = updateFaculty.map((x) => x);
       },
+      error: (error) => console.log(error),
     });
   }
+
+  onStartDate(startDate: any) {
+    this.searchStartDate = startDate.toString();
+    this._attendanceService
+      .searchAttendanceTable('', this.searchStartDate, this.searchEndDate, '')
+      .subscribe({
+        next: (response: any) => (this.activeAttendance = response.map((x) => x)),
+      });
+  }
+
+  onEndDate(endDate: any) {
+    this.searchEndDate = endDate.toString();
+    this._attendanceService
+      .searchAttendanceTable('', this.searchStartDate, this.searchEndDate, '')
+      .subscribe({
+        next: (response: any) => (this.activeAttendance = response.map((x) => x)),
+      });
+  }
+
 
   getDate() {
     return this.date;
@@ -210,19 +151,40 @@ export class AttendanceTableComponent implements OnInit {
   }
 
   exportToExcel() {
-    //  for (let row = 0; row <= this.activeAttendance.length; row++) {
-    //    console.log(this.activeAttendance[0].teachName);
-    //  }
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sheet 1');
 
     worksheet.getCell('A1').value = 'Faculty Name';
+    const cellA1 = worksheet.getCell('A1');
+    cellA1.font = {
+      bold: true,
+    };
+
     worksheet.getCell('B1').value = 'Subject';
+    const cellB1 = worksheet.getCell('B1');
+    cellB1.font = {
+      bold: true,
+    };
+
     worksheet.getCell('C1').value = 'Time In';
+    const cellC1 = worksheet.getCell('C1');
+    cellC1.font = {
+      bold: true,
+    };
+
     worksheet.getCell('D1').value = 'Time Out';
-    worksheet.getCell('E1').value = 'No Of Hours';
+    const cellD1 = worksheet.getCell('D1');
+    cellD1.font = {
+      bold: true,
+    };
     
-    let ctr = 0
+    worksheet.getCell('E1').value = 'Date';
+    const cellE1 = worksheet.getCell('E1');
+    cellE1.font = {
+      bold: true,
+    };
+
+    let ctr = 0;
     // Loop to generate values in row 2
     for (let row = 2; row <= this.activeAttendance.length + 1; row++) {
       for (let col = 1; col <= 5; col++) {
@@ -230,7 +192,7 @@ export class AttendanceTableComponent implements OnInit {
         worksheet.getCell(`B${row}`).value = this.activeAttendance[ctr].subject;
         worksheet.getCell(`C${row}`).value = this.activeAttendance[ctr].timeIn;
         worksheet.getCell(`D${row}`).value = this.activeAttendance[ctr].timeOut;
-        worksheet.getCell(`E${row}`).value = this.activeAttendance[ctr].numberOfHour;
+        worksheet.getCell(`E${row}`).value = this.date;
       }
       ctr++;
     }
@@ -241,12 +203,13 @@ export class AttendanceTableComponent implements OnInit {
   }
 
   saveAsExcelFile(buffer: any, fileName: string): void {
-    const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const data: Blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     const url = window.URL.createObjectURL(data);
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
     link.click();
   }
-
 }

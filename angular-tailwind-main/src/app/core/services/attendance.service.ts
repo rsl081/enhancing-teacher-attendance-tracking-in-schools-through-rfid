@@ -38,7 +38,33 @@ export class AttendanceService {
 
   searchAttendance(search: any, searchAttendanceDateId: any) {
     return this.http.get<any>(
-      this.baseURL + 'attendance/the-attendance/?rfid=' + search + '&searchAttendanceDateId=' + searchAttendanceDateId,
+      this.baseURL +
+        'attendance/the-attendance/?search=' +
+        search +
+        '&searchAttendanceDateId=' +
+        searchAttendanceDateId,
+    );
+  }
+
+
+      // string searchStartDate,  
+      //       string searchEndDateStr,
+  
+  searchAttendanceTable(
+    search: any, 
+    searchStartDate: any,
+    searchEndDateStr: any,
+    searchAttendanceDateId: any) {
+    return this.http.get<any>(
+      this.baseURL +
+        'attendance/the-attendance-table/?search=' +
+        search +
+        '&searchStartDate=' +
+        searchStartDate +
+        '&searchEndDateStr=' +
+        searchEndDateStr +
+        '&searchAttendanceDateId=' +
+        searchAttendanceDateId,
     );
   }
 
