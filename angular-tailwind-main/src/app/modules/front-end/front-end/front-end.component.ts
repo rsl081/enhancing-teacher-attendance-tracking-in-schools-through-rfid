@@ -63,6 +63,7 @@ export class FrontEndComponent implements OnInit {
 
     this._accountService.getAllFaculty(rfid).subscribe({
       next: (f: any) => {
+
         const id = f.map((x) => x.id);
         this.userPhoto = f.map((x) => x.userPhoto);
 
@@ -94,6 +95,7 @@ export class FrontEndComponent implements OnInit {
             const rfid = updateFaculty.map((x) => x.rfid);
             const isNowUpdated = updateFaculty.map((x) => x.isNowUpdated);
             const isLooping = updateFaculty.map((x) => x.isLooping);
+           
 
             if (rfid == '') {
               //* Create once per day
@@ -114,6 +116,7 @@ export class FrontEndComponent implements OnInit {
                   let timeInSplit = value.timeIn.split('T')[1].split('+')[0];
                   const timeInNewFormat = new Date('1970-01-01T' + timeInSplit); // Create a Date object
                   this.timeIn = this.datePipe.transform(timeInNewFormat, 'hh:mm a'); // Create a Date object
+                  this.timeOut = '';
                 },
                 complete: () => {
                   this._attendanceService.attendanceUpdateNeeded.next();
@@ -178,6 +181,7 @@ export class FrontEndComponent implements OnInit {
                     let timeInSplit = value.timeIn.split('T')[1].split('+')[0];
                     const timeInNewFormat = new Date('1970-01-01T' + timeInSplit + '+07:30'); // Create a Date object
                     this.timeIn = this.datePipe.transform(timeInNewFormat, 'hh:mm a'); // Create a Date object
+                    this.timeOut = '';
                   },
                   complete: () => {
                     this._attendanceService.attendanceUpdateNeeded.next();

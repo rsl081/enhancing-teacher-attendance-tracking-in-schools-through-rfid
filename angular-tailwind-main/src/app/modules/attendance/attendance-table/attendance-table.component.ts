@@ -192,7 +192,7 @@ export class AttendanceTableComponent implements OnInit {
         worksheet.getCell(`B${row}`).value = this.activeAttendance[ctr].subject;
         worksheet.getCell(`C${row}`).value = this.activeAttendance[ctr].timeIn;
         worksheet.getCell(`D${row}`).value = this.activeAttendance[ctr].timeOut;
-        worksheet.getCell(`E${row}`).value = this.date;
+        worksheet.getCell(`E${row}`).value = this.activeAttendance[ctr].theDate.split('T')[0];
       }
       ctr++;
     }
